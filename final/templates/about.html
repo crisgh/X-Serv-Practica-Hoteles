@@ -1,0 +1,38 @@
+{% extends "index.html" %}
+{% block header %}
+<div id="header">
+  <div class="headtitle">Página about</div>
+  {% if logged %}
+  <li>Hola {{ username }}<a href="http://127.0.0.1:8000/logout">LOGOUT</a></li>
+  {% else %}
+  <li>Inicia sesión</li>
+  <p>
+    <form action="" method="post" action="/login">{% csrf_token %}
+      <table>
+        Usuario:
+          <input type="text" name="Usuario" value ="{{ form.username }}"><br>{{ form.username }}
+        Contraseña:
+          <input type="text" name="Password" value ="{{ form.password }}"><br>{{ form.password }}
+
+      </table>
+      <input type="submit" value="login" />
+    </form>
+  </p>
+  {% endif %}
+</div>
+{% endblock header%}
+
+{% block content %}
+<div id="content">
+  <div id="insidecontent"> <br>
+    <h1>Página principal</h1>
+      <p>Muestra los 10 hoteles mas comentados y las paginas de usuarios.</p>
+    <h1>Página de alojamientos</h1>
+      <p>Muestra una lista de todos los alojamientos.</p>
+    <h1>Página de alojamiento individual</h1>
+      <p>Muestra toda la información sobre un alojamiento particular.</p>
+    </div>
+    <div style="clear: both;"></div>
+  </div>
+
+{% endblock content %}

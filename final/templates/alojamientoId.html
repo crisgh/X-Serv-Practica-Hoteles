@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <title>Página de {{ hotel.Nombre }}</title>
+    <meta http-equiv="Content-Type" content="application/text/html+xml; charset=utf-8"  />
+
+    <link rel="stylesheet" type="text/css" href="http:/estilo.css" media="screen" />
+  </head>
+
+
+
+
+
+<body>
+
+<div id="container">
+
+  <div id="header">
+    {% if logged %}
+    <li>Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a></li>
+    {% else %}
+    <li>Inicia sesión : <a href="http://127.0.0.1:8000/login">LOGIN</a></li>
+    {% endif %}
+
+  </div>
+
+
+<div id="navcontainer">
+<ul id="navlist">
+<li id="active"><a href="/" id="current">inicio</a></li>
+<li><a href="/alojamientos">alojamientos</a></li>
+<li><a href="/about">about</a></li>
+<li><a href="/xml">xml</a></li>
+</ul>
+</div>
+
+<div id="wrapper">
+
+
+<div id="content">
+  <div id="content">
+
+       <h1>Pagina de {{hotel.Nombre}} --> <a href="http://127.0.0.1:8000/incluirFavorito/{{hotel.id}}">Incluir este alojamiento a tus favoritos</a></h1>
+       <p>
+         Web: <a href="{{ hotel.url_hotel }}">{{ hotel.url_hotel }}</a><br>
+         Dirección: {{ hotel.direccion }}<br>
+         {{hotel.Descrip|striptags}}
+        <p> Imágenes:</p>
+         {% for imagen in imagenes %}
+         <img class="imageleft"><img src="{{ imagen.url }}"></img><br><br>
+           {% empty %}
+             No hay imagenes <br/>
+         {% endfor %}
+       </p>
+       <p>
+         Comentarios:
+         {% for comentarios in comentarios%}
+
+         <body>{{comentarios.Date}} , {{comentarios.body}}</body>
+       </p>
+          {%if empty %}
+         No hay comentarios <br/>
+         {% endif%}
+         {% endfor%}
+
+     <div style="clear: both;"></div>
+  </div>
+  <h1>Puedes comentar sobre este alojamiento</h1>
+   {% if logged %}
+   <form action="" method="POST">
+     {% csrf_token %}
+     {{form}}
+     <textarea name="comment" rows="10" cols="15"></textarea>
+     <input type="submit" value="Comentar">
+   </form>
+   <br><br>
+   <form action="/cambiarIdioma/{{hotel.id}}" method="POST">{% csrf_token %}
+                   <label for="idioma"><h2>Cambia el idioma</h2></label>
+                     <select id="idioma" name="idioma">
+                      <option value="" selected="selected">- selecciona -</option>
+                      <option value="ingles">ingles</option>
+                      <option value="frances">frances</option>
+                      <option value="espaniol">espaniol</option>
+                    </select>
+                    <input type="submit" value="Enviar" style=""/>
+                  </form>
+   {% endif %}
+
+
+
+
+<div id="footer">
+  <p>Copyrigth Cristina Gallego</p>
+  <p> Datos proporcionados por el <a href="http://www.esmadrid.com"> Ayuntamiento de Madrid </a></p>
+</div>
+
+
+</div>
+</body>
+</html>

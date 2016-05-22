@@ -1,0 +1,41 @@
+{% extends "plantilla_index.html" %}
+{%block right%}
+<div id="right">
+</div>
+{% endblock right %}
+{% block content %}
+<div id="content">
+    <form action="/alojamientos" method="POST">
+
+      {% csrf_token %}
+      {{form}}
+    <select name="filt"><option value="" >- selecciona -</option>
+      <option value="hoteles">Hoteles</option>
+      <option value="Apartahoteles">Apartahoteles</option>
+      <option value="Hostales">Hostales</option>
+      <option value="Residencias universitarias">Residencias Universitarias</option>
+      <option value="Albergues">Albergues</option>
+      <option value="Camping">Camping</option>
+      <option value="Pensiones">Pensiones</option>
+    </select>
+
+    <br><input type="submit" value="Filtrar">
+    </form>
+<h1>Listado de alojamientos</h1>
+          <p>
+            {% for hoteles in hoteles %}
+              <li>
+                Nombre: <a href="http://127.0.0.1:8000/alojamientos/{{ hoteles.id }}">{{ hoteles.Nombre }} </a><br>
+                Dirección: {{ hoteles.direccion }}<br>
+                Web: <a href ="{{ hoteles.url_hotel }}">{{ hoteles.url_hotel }}</a><br>
+                Categoria : {{hoteles.categoria}} con {{hoteles.estrellas}}<br><br>
+
+              </li>
+            {% endfor %}
+            <br><br>
+	        </p>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+
+{% endblock content %}

@@ -1,0 +1,53 @@
+{% extends "index.html" %}
+{% block header %}
+<div id="header">
+  {% if logged %}
+  <li>Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a></li>
+  {% else %}
+  <li>Inicia sesión : <a href="http://127.0.0.1:8000/login">LOGIN</a></li>
+  {% endif %}
+
+</div>
+{% endblock header%}
+
+{%block right%}
+<div id="right">
+
+  <h1>Listado de páginas de los usuarios</h1>
+  <p>
+    {% for user in users %}
+    <li>Página del usuario <a href="http://127.0.0.1:8000/{{user}}">{{user}}</a></li>
+    <br>
+    {% endfor %}
+    <br><br>
+  </p>
+</div>
+  {%endblock right%}
+
+{% block content %}
+<div id="content">
+  <h1> Hoteles con mas comentarios </h1>
+  <ul class = "indexlist">
+    {% for hoteles,url in hoteles %}
+      <div class="10hoteles"</div>
+        <li>
+          <item>
+            <div class="hoteles">
+              <a href="{{hoteles.url}}"><h3>{{hoteles.Nombre}}</h3></a>
+              <strong>Situado en: </strong>{{hoteles.direccion}}<br/>
+            </div>
+            {% ifnotequal url "" %}
+              <img src="{{url}}"alt=""width="280" height="200"><br/>
+            {% endifnotequal %}
+            <blockquote class="go">
+              <a href="/alojamientos/{{hoteles.id}}">Mas informacion</a>
+            </blockquote>
+          </item>
+        </li><hr class="separator">
+      </div>
+      {% empty %}
+        No hay hoteles con comentarios <br/>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock content %}

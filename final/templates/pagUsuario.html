@@ -1,0 +1,40 @@
+{% extends "index.html" %}
+{% block header %}
+<div id="header">
+  {% if logged %}
+  <li>Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a></li>
+  {% else %}
+  <li>Inicia sesión : <a href="http://127.0.0.1:8000/login">LOGIN</a></li>
+  {% endif %}
+
+</div>
+{% endblock header%}
+
+{% block content %}
+<div id="content">
+  <h1> Mis alojamientos favoritos </h1>
+    {% for hoteles in hoteles %}
+      <div class="Mishoteles"</div>
+          <item>
+            <div class="hoteles">
+              <ul class = "indexlist">
+              <a href="{{hoteles.Hotel.url_hotel}}"><h3>{{hoteles.Hotel.Nombre}}</h3></a>
+              alojamiento favorito desde : {{hoteles.Date}}<br/>
+
+              <strong>Situado en: </strong>{{hoteles.Hotel.direccion}}<br/>
+
+            {% if empty%}
+            No tiene alojamientos en su lista de Favoritos.
+            {% endif %}
+
+            <blockquote class="go">
+              <a href="/alojamientos/{{hoteles.Hotel.id}}">Mas informacion</a>
+            </blockquote>
+          </item>
+        <hr class="separator">
+        <a href="/">Volver a la pagina principal</a>
+      </div>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock content %}

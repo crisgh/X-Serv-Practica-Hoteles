@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=iso-8859-1" />
+<link rel="stylesheet"  href="estilo.css" type="text/css"/>
+<title> Hoteles </title>
+</head>
+
+
+
+<body>
+
+<div id="container">
+
+<div id="header">
+  {% block header %}{% endblock%}
+</div>
+
+<div id="navcontainer">
+<ul id="navlist">
+<li id="active"><a href="/" id="current">inicio</a></li>
+<li><a href="/alojamientos">alojamientos</a></li>
+<li><a href="/about">about</a></li>
+<li><a href="/xml">xml</a></li>
+</ul>
+</div>
+
+<div id="wrapper">
+
+
+
+<div id="right">
+{%block right%}{%endblock right%}
+</div>
+<div id="content">
+    <div id="principal">
+      {% block content %}{% endblock%}
+    </div>
+
+
+<div id="footer">
+  <p>Copyrigth Cristina Gallego</p>
+  <p> Datos proporcionados por el <a href="http://www.esmadrid.com"> Ayuntamiento de Madrid </a></p>
+</div>
+
+
+</div>
+</body>
+</html>

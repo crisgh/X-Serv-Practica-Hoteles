@@ -1,0 +1,9 @@
+{% extends "plantilla_index.html" %}
+{% block header%}
+<form action="" method="post" action="{% url  'django.contrib.auth.views.login'%}">
+  {% csrf_token %}
+  {{form}}
+    <input type="submit" class="btn btn-primary" value="login"/>
+    <input type="hidden" name="next" />
+</form>
+{% endblock%}

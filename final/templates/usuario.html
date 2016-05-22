@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Página xml del usuario {{ user }}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="estilo.css" media="screen" />
+  </head>
+
+  <body>
+    <div id="container">
+      <div id="header">
+        {% if logged %}
+        <li>Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a></li>
+        {% else %}
+        <li>Inicia sesión : <a href="http://127.0.0.1:8000/login">LOGIN</a></li>
+        {% endif %}
+
+      </div>
+
+
+      <div id="content">
+        <div id="insidecontent"> <br>
+          <h1>Listado de alojamientos seleccionados por {{ user }} en formato xml</h1>
+          <p>
+            {{ xml }}
+            <br><br>
+	        </p>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+
+
+
+      <div id="footer">
+        <p>Copyrigth Cristina Gallego</p>
+        <p> Datos proporcionados por el <a href="http://www.esmadrid.com"> Ayuntamiento de Madrid </a></p>
+      </div>
+
+
+    </div>
+  </body>
+</html>
