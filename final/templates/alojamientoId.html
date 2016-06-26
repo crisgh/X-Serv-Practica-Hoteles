@@ -5,7 +5,9 @@
     <title>Página de {{ hotel.Nombre }}</title>
     <meta http-equiv="Content-Type" content="application/text/html+xml; charset=utf-8"  />
 
-    <link rel="stylesheet" type="text/css" href="http:/estilo.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="http:/estilofinal.css" media="screen" />
+    <link rel="shortcut icon" href="/images/favicon.ico">
+
   </head>
 
 
@@ -17,12 +19,13 @@
 <div id="container">
 
   <div id="header">
-    {% if logged %}
-    <li>Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a></li>
-    {% else %}
-    <li>Inicia sesión : <a href="http://127.0.0.1:8000/login">LOGIN</a></li>
-    {% endif %}
+    <h2>¡Alojamientos Madrid!</h2>
 
+    {% if logged %}
+    Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a>
+    {% else %}
+    Inicia sesión : <a href="http://127.0.0.1:8000/login">LOGIN</a>
+    {% endif %}
   </div>
 
 
@@ -31,8 +34,12 @@
 <li id="active"><a href="/" id="current">inicio</a></li>
 <li><a href="/alojamientos">alojamientos</a></li>
 <li><a href="/about">about</a></li>
-<li><a href="/xml">xml</a></li>
+{%if logged%}
+<li><a href="/{{username}}">Mi pagina</a></li>
+{%endif%}
+
 </ul>
+
 </div>
 
 <div id="wrapper">
@@ -40,12 +47,16 @@
 
 <div id="content">
   <div id="content">
-
-       <h1>Pagina de {{hotel.Nombre}} --> <a href="http://127.0.0.1:8000/incluirFavorito/{{hotel.id}}">Incluir este alojamiento a tus favoritos</a></h1>
+    <h1>Pagina de {{hotel.Nombre}}
+    {%if logged%}
+      ~ <a href="http://127.0.0.1:8000/incluirFavorito/{{hotel.id}}">Incluir este alojamiento a tus favoritos</a></h1>
+    {%endif%}
+  </h1>
        <p>
+
          Web: <a href="{{ hotel.url_hotel }}">{{ hotel.url_hotel }}</a><br>
          Dirección: {{ hotel.direccion }}<br>
-         {{hotel.Descrip|striptags}}
+         {{hotel.Descrip|striptags|safe}}
         <p> Imágenes:</p>
          {% for imagen in imagenes %}
          <img class="imageleft"><img src="{{ imagen.url }}"></img><br><br>
@@ -54,26 +65,26 @@
          {% endfor %}
        </p>
        <p>
-         Comentarios:
          {% for comentarios in comentarios%}
 
-         <body>{{comentarios.Date}} , {{comentarios.body}}</body>
+         Comentarios:
+         <body>{{comentarios.Date}} , {{comentarios.body}}, comentario de {{comentarios.Nombre_comentario}}</body>
        </p>
-          {%if empty %}
+        {%if empty %}
          No hay comentarios <br/>
          {% endif%}
          {% endfor%}
 
      <div style="clear: both;"></div>
   </div>
-  <h1>Puedes comentar sobre este alojamiento</h1>
-   {% if logged %}
-   <form action="" method="POST">
+  {% if logged %}
+    <h1>Puedes comentar sobre este alojamiento</h1>
+    <form action="" method="POST">
      {% csrf_token %}
      {{form}}
      <textarea name="comment" rows="10" cols="15"></textarea>
      <input type="submit" value="Comentar">
-   </form>
+    </form>
    <br><br>
    <form action="/cambiarIdioma/{{hotel.id}}" method="POST">{% csrf_token %}
                    <label for="idioma"><h2>Cambia el idioma</h2></label>

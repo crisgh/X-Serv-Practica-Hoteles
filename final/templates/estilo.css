@@ -18,20 +18,20 @@ body {
 	margin: 0px auto;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: .8em;
-	color: #FFFFFF;
+	color: #F2EBF1;
 	background-color: #000000;
 }
 
 #header {margin-top: 1px;
-	background-image: url(images/header_low.jpg);
+	background-image: url(images/madrid.jpg);
 	height: 320px;
 	border: 1px solid #FFFFFF;
 }
 
 #wrapper {
 	margin-top: 7px;
-	background-image: url(images/wrapper_bg.gif);
 	background-repeat: repeat-y;
+  padding: 120px;
 }
 
 #left {
@@ -40,12 +40,12 @@ body {
 	background-image: url(images/round_corner.gif);
 	background-repeat: no-repeat;
 	color: #FFFFFF;
-	background-color: #C138C1;
+	background-color: #FE2EC8;
 	padding: 5px;
 }
 
 #right {
-	background-color: #C138C1;
+	background-color: #FE2EC8;
 	color: #FFFFFF;
 	float: right;
 	width: 155px;
@@ -108,8 +108,8 @@ blockquote{
 }
 
 h1{
-	background-color: #7C597C;
-	padding: 5px;
+	background-color: #E62CA9;
+	padding: 3px;
 	font-size: 1.3em;
 	color: #FFFFFF;
 	margin-top: 5px;

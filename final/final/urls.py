@@ -22,18 +22,22 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$','hoteles.views.inicio'),
+    url(r'^cambiarTitulo$', 'hoteles.views.cambiarTitulo'),
     url(r'^alojamientos$','hoteles.views.mostrarAlojamientos'),
     url(r'^alojamientos/(.+)$','hoteles.views.mostrarAlojamientoId'),
     url(r'^incluirFavorito/(.+)', 'hoteles.views.incluirFavorito'),
     url(r'^about$','hoteles.views.mostrarAbout'),
     url(r'^xml$','hoteles.views.xml_usuario'),
+    url(r'^rss$','hoteles.views.RSS'),
     url(r'^logout','django.contrib.auth.views.logout',{'next_page':'/'}),
     url(r'^login','django.contrib.auth.views.login'),
     url(r'^accounts/profile/','hoteles.views.inicio'),
     url(r'^cambiarIdioma/(.*)','hoteles.views.cambiarIdioma'),
+    #url(r'^cambiarIdioma/(.+)','hoteles.views.mostrarAlojamientoId'),
     url(r'images/(.*)$','django.views.static.serve',{'document_root':'templates/images/'}),
     #url(r'^(estilo.css)$','django.views.static.serve',{'document_root':'templates/'}),
-    url(r'(estilo.css)$','django.views.static.serve',{'document_root':'templates/'}),
+    url(r'(estilofinal.css)$','django.views.static.serve',{'document_root':'templates/'}),
+    #url(r'(alojamientos/estilonuevo.css)$','django.views.static.serve',{'document_root':'templates/'}),
     url(r'^(.*)$','hoteles.views.pagUsuario'),
 
     ]

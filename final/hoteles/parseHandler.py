@@ -5,7 +5,10 @@ from xml.sax import make_parser
 import urllib2,urllib
 import sys
 import os.path
+import sys
 
+#reload(sys)
+#sys.setdefaultencoding('utf8')
 
 class myContentHandler(ContentHandler):
 

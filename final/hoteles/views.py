@@ -7,6 +7,7 @@ from xml.sax.handler import ContentHandler
 from xml.sax import make_parser
 import urllib2
 import sys
+
 import os.path
 from parseHandler import myContentHandler
 from models import Hoteles, Imagen, Comentario, Hotel_selecc, CSS
@@ -32,10 +33,16 @@ def parsear(idioma):
     # Ready, set, go!
     if idioma == 'es':
         xmlFile = urllib2.urlopen('http://www.esmadrid.com/opendata/alojamientos_es.xml')
+        xmlFile = urllib2.urlopen('http://cursosweb.github.io/etc/alojamientos_es.xml')
+
     if idioma == 'en':
-        xmlFile = urllib2.urlopen('http://www.esmadrid.com/opendata/alojamientos_v1_en.xml')
+        #xmlFile = urllib2.urlopen('http://www.esmadrid.com/opendata/alojamientos_v1_en.xml')
+        xmlFile = urllib2.urlopen('http://cursosweb.github.io/etc/alojamientos_en.xml')
+
     if idioma == 'fr':
-        xmlFile = urllib2.urlopen('http://www.esmadrid.com/opendata/alojamientos_v1_fr.xml')
+        #xmlFile = urllib2.urlopen('http://www.esmadrid.com/opendata/alojamientos_v1_fr.xml')
+        xmlFile = urllib2.urlopen('http://cursosweb.github.io/etc/alojamientos_fr.xml')
+
     theParser.parse(xmlFile)
     lista = theHandler.dameLista()
     print "Parse " + idioma + " complete"
@@ -49,7 +56,7 @@ def inicio(request):
         logged = False
     respuesta = ""
     list_ordenada = []
-    print str(list_ordenada)
+    list_users = []
     alojamientos = Hoteles.objects.all()
     if len(alojamientos)<1 :
         lista_es = parsear('es')
@@ -63,37 +70,38 @@ def inicio(request):
         if contador < 10:
             contador = contador + 1
             try:
-                hoteles = Hoteles.objects.get(id = elem[0])
-                #respuesta += '<li><a href="'+ hoteles.url_hotel + '">' + hoteles.Nombre + '</a></li>'
-                #respuesta += '<li>' + hoteles.direccion + '</li>'
-                try:
-                    imagenes = Imagen.objects.filter(Hotel_id=hoteles)
-                    if len(imagenes)>0:
-                        #for imagen in imagenes:
-                            #    respuesta += '<img src="' + imagen.url + '">'
-                        lista_hoteles.append((hoteles,imagenes[0].url))
-                    else:
-                        print "Error al cargar imagenes, imagenes no encontradas"
-                        lista_hoteles.append((hoteles,""))
-                except Imagen.DoesNotExist:
-                    print "No tiene imagenes"
-                    #respuesta += "No tiene imagenes"
-                    #respuesta += '<li><a href="'+ hoteles.url_hotel + '">' + 'Mas informacion' + '</a></li>'
-            except hoteles.DoesNotExist:
-                    respuesta += "No existe el alojamiento"
-    users =User.objects.all()
+                alojamiento = Hoteles.objects.get(id = elem[0])
+                imagenes = Imagen.objects.filter(Hotel_id = alojamiento)
+                usuarios = User.objects.all()
+                for usuario in usuarios:
+                    try:
+                        css = CSS.objects.get(User = usuario.username)
+                        if len(list_users)<len(usuarios):
+                            list_users.append((css.User, css.Titulo))
+                    except CSS.DoesNotExist:
+                        if len(list_users)<len(usuarios):
+                            list_users.append((usuario.username, ("Pagina de " + usuario.username)))
+                if len(imagenes)>0:
+                    lista_hoteles.append((alojamiento, imagenes[0].url))
+                else:
+                    lista_hoteles.append((alojamiento, ""))
+            except ObjectDoesNotExist:
+                    print "No existe el alojamiento!"
+
     template = get_template('plantilla_index.html')
-
-
     Context = RequestContext(request, {'hoteles':lista_hoteles ,
                                         'username':request.user.username,
-                                        'users':users,
+                                        'users':list_users,
                                         'logged' : logged,
                                         })
     return HttpResponse(template.render(Context))
+    print list_users
 
 
 def iniHoteles(lista):
+
+    reload(sys)
+    sys.setdefaultencoding('utf8')
     respuesta = ""
     for dicHotel in lista:
         nombre = dicHotel['name']
@@ -104,7 +112,6 @@ def iniHoteles(lista):
         except KeyError:
             respuesta += ""
         url = dicHotel['web']
-
         descripcion = strip_tags(dicHotel['body'])
         hotel = Hoteles(Nombre = nombre, direccion = direccion, categoria = categoria, estrellas = estrellas, url_hotel = url, Descrip = descripcion)
         hotel.save()
@@ -133,17 +140,68 @@ def ordenarhoteles(lista):
 def pagUsuario(request,usuario):
     if request.user.is_authenticated():
         logged = True
+        nombreUser = request.user.username
+
     else:
         logged = False
-    nombreUser = request.user.username
+        nombreUser = "usuario"
+    hoteles = []
+    #username = request.user.username
+    try:
+        css = CSS.objects.get(User=usuario)
+        titulo = css.Titulo
+        u = usuario
+        usuario = User.objects.get(username=usuario)
+    except CSS.DoesNotExist:
+        usuario = User.objects.get(username=usuario)
+        u = usuario.username
+        titulo = ""
     if nombreUser == usuario:
         try:
-            user = User.objects.filter(username=nombreUser)
-            hoteles = Hotel_selecc.objects.filter(Nombre_usuario=nombreUser)
+            hoteles = Hotel_selecc.objects.filter(Nombre_usuario=usuario)
         except Hotel_selecc.DoesNotExist:
             print "No hay hoteles favoritos"
             return redirect("/")
-                # CSS...
+    else:
+        try:
+            user = User.objects.filter(username=usuario)
+            hoteles = Hotel_selecc.objects.filter(Nombre_usuario=usuario)
+
+        except Hotel_selecc.DoesNotExist:
+            print "No hay hoteles favoritos"
+            hoteles = [""]
+
+    template = get_template('pagUsuario.html')
+    context = RequestContext(request, {'hoteles': hoteles, 'username':nombreUser,'usuario': u, 'titulo': titulo,'logged':logged}) #le pasamos el objeto completo
+    return HttpResponse(template.render(context))
+
+def cambiarTitulo(request):
+    hoteles = []
+    if request.user.is_authenticated():
+        logged = True
+        nombreUser = request.user.username
+        titulo = request.POST.get("titulo")
+        #letra = request.POST.get("Letra")
+        #color = request.POST.get("Color")
+        try:
+            css = CSS.objects.get(User=nombreUser)
+            css.Titulo = titulo
+            #css.Letra = letra
+            #css.Color = color
+            css.save()
+            print "aqui"
+            usuario = User.objects.get(username=nombreUser)
+        except CSS.DoesNotExist:
+            print "no existe"
+            css = CSS(Titulo=titulo, User=nombreUser, Letra=0.0, Color="#DF01A5")
+            css.save()
+            usuario = User.objects.get(username=nombreUser)
+    if nombreUser == usuario:
+        try:
+            hoteles = Hotel_selecc.objects.filter(Nombre_usuario=usuario)
+        except Hotel_selecc.DoesNotExist:
+            print "No hay hoteles favoritos"
+            return redirect("/")
     else:
         try:
             user = User.objects.filter(username=usuario)
@@ -153,39 +211,42 @@ def pagUsuario(request,usuario):
             hoteles = [""]
 
     template = get_template('pagUsuario.html')
-
-    Context = RequestContext (request,{  'username': nombreUser,
-                                            'logged': logged,
-                                            'hoteles': hoteles,
-                                            })
-    return HttpResponse(template.render(Context))
+    context = RequestContext(request, {'hoteles': hoteles, 'username': nombreUser, 'titulo': titulo,
+                                        #'Letra':letra,
+                                        #'Color':color,
+                                        'logged':logged}) #le pasamos el objeto completo
+    return HttpResponse(template.render(context))
+    return redirect("/" + username)
 
 def xml_usuario(request):
     if request.user.is_authenticated():
         logged = True
         nombreUser = request.user.username
-        user=User.objects.filter(username=nombreUser)
-        Hotel = Hotel_selecc.objects.filter(Nombre_usuario=user)
-        data = serializers.serialize("xml", Hotel_selecc.objects.all())
-
+        print nombreUser
+        #user=User.objects.filter(username=nombreUser)
+        #print user
+        Hotel = Hotel_selecc.objects.filter(Nombre_usuario=nombreUser)
+        print Hotel
+        data = serializers.serialize("xml", Hotel)
+        from django.core.files import File
+        f = open('usuario.xml', 'w')
+        myfile = File(f)
+        myfile.write(data)
+        myfile.close()
+        fil = open('usuario.xml','r')
+        xml = fil.read()
     else:
         logged = False
-    from django.core.files import File
-    f = open('usuario.xml', 'w')
-    myfile = File(f)
-    myfile.write(data)
-    myfile.close()
-    fil = open('usuario.xml','r')
-    xml = fil.read()
+
     return HttpResponse(xml,content_type = 'text/xml')
 
-def incluirFavorito(request,id):
+def incluirFavorito(request,ident):
     respuesta = "Favorito incluido en tu lista "
     if request.user.is_authenticated():
         nombreUser = request.user.username
         try:
             user = User.objects.get(username = nombreUser)
-            alojamiento = Hoteles.objects.get(id = int(id))
+            alojamiento = Hoteles.objects.get(id = int(ident))
             favorito = Hotel_selecc(Hotel = alojamiento, Nombre_usuario = user)
             favorito.save()
             #return redirect("/alojamientos/"+ id)
@@ -205,8 +266,12 @@ def mostrarAlojamientos(request):
     #if 'filt' in request.POST and request.POST['filt']:
     if request.method == 'POST':
         filt = request.POST['filt']
+        grupo = request.POST['estrellas']
+        print filt + grupo
         try:
             hoteles_fil = Hoteles.objects.filter(categoria__contains=filt)
+            hoteles_fil = hoteles_fil.filter(estrellas__contains=grupo)
+
         except Hoteles.DoesNotExist:
             print  "no hay hoteles con esa categoria "
             return redirec("/alojamientos")
@@ -236,11 +301,21 @@ def mostrarAlojamientoId(request, ident):
 
     else:
         logged = False
-
+        nombreUser = "usuario"
+    hotel = Hoteles.objects.get(id=int(ident))
+    encontrado = True
+    buscar = True
     if request.method == 'POST':
-        hotel = Hoteles.objects.get(id=int(ident))
-        comentario = Comentario(body = request.POST['comment'], Hotel_id = int(ident))
-        comentario.save()
+        comentario = Comentario(body = request.POST['comment'], Hotel_id = int(ident), Nombre_comentario = nombreUser)
+        if buscar == True:
+            try:
+                comentario = Comentario.objects.get(Hotel_id = int(ident),Nombre_comentario=nombreUser)
+                print "busco y existe"
+            except Comentario.DoesNotExist:
+                encontrado = False
+        if encontrado == False:
+            comentario.save()
+            print "guardo"
     try:
         hotel= Hoteles.objects.get(id=ident)
         imagenes = Imagen.objects.filter(Hotel_id=ident)
@@ -279,35 +354,59 @@ def mostrarAbout(request):
                 'logged': logged})
     return HttpResponse(template.render(context))
 def cambiarIdioma(request, ident):
+    if request.user.is_authenticated():
+        logged = True
+    else:
+        logged = False
     lista = []
     idioma = request.POST.get("idioma")
 
     alojamiento = Hoteles.objects.get(id=ident)
     imagenes = Imagen.objects.filter(Hotel_id = alojamiento)
     comentarios = Comentario.objects.filter(Hotel_id=alojamiento)
+    nombre = alojamiento.Nombre
     if len(imagenes)==0:
         imagenes = []
     if len(comentarios)==0:
         comentarios = []
-    nombre = alojamiento.Nombre
+
     if idioma=="ingles":
-        lista = parsear('en')
+        print "entra"
+        lista = parsear("en")
+        print lista
         for elem in lista:
             if elem["name"]==nombre:
-                body = strip_tags(elem["body"])
+                body = elem["body"]
                 print body
-                alojamiento.descripcion = body
+                alojamiento.Descrip = body
         template = get_template('alojamientoId.html')
-        context = RequestContext(request, {'hotel': alojamiento, 'imagenes': imagenes, 'comentarios': comentarios}) #le pasamos el objeto completo
+        context = RequestContext(request, {'username': request.user.username,'hotel': alojamiento, 'imagenes': imagenes, 'comentarios': comentarios, 'logged':logged}) #le pasamos el objeto completo
         return HttpResponse(template.render(context))
     if idioma=="frances":
         lista = parsear('fr')
         for elem in lista:
             if elem["name"]==nombre:
-                body =strip_tags(elem["body"])
-                alojamiento.descripcion = body
+                body =elem["body"]
+                alojamiento.Descrip = body
         template = get_template('alojamientoId.html')
-        context = RequestContext(request, {'hotel': alojamiento, 'imagenes': imagenes, 'comentarios': comentarios}) #le pasamos el objeto completo
+        context = RequestContext(request, {'username': request.user.username,'hotel': alojamiento, 'imagenes': imagenes, 'comentarios': comentarios,'logged':logged}) #le pasamos el objeto completo
         return HttpResponse(template.render(context))
-    if idioma=="espaniol":
-        return redirect("/")
+    if idioma=="espaniol" or "None":
+        return redirect("/alojamientos/" + str(ident))
+
+def RSS(request):
+    if request.user.is_authenticated():
+        logged = True
+        nombreUser = request.user.username
+        try:
+            user = User.objects.get(username = nombreUser)
+        except User.DoesNotExist:
+            print "Fallo aqui"
+
+    else:
+        logged = False
+        nombreUser = ""
+    comentarios = Comentario.objects.all()
+    template = get_template('rss.html')
+    context = RequestContext(request, {'logged':logged,'username':nombreUser,'comentarios': comentarios})
+    return HttpResponse(template.render(context))

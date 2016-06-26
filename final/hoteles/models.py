@@ -19,7 +19,7 @@ class Comentario(models.Model):
     Date = models.DateTimeField(auto_now=True)
     body = models.TextField(default = "")
     Hotel = models.ForeignKey(Hoteles)
-
+    Nombre_comentario = models.CharField(max_length=32)
 class Hotel_selecc (models.Model):
     Nombre_usuario = models.CharField(max_length=32)
     Hotel = models.ForeignKey(Hoteles)

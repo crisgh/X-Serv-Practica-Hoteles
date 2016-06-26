@@ -1,0 +1,48 @@
+{% extends "plantilla_index.html" %}
+{% block header %}
+  <div id="header">
+    <h2>¡Alojamientos Madrid!</h2>
+
+    {% if logged %}
+    Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a>
+    {% else %}
+    Inicia sesión : <a href="http://127.0.0.1:8000/login">LOGIN</a>
+    {% endif %}
+  </div>
+{% endblock header%}
+
+{%block right%}
+<div id="right">
+  <h2> Paginas de usuarios: </h2>
+  <p>
+    {% for user,titulo in users %}
+    <li><a href="http://127.0.0.1:8000/{{user}}">{{titulo|striptags|safe}}</a><br/></li>
+    {% endfor %}
+    <br><br>
+  </p>
+</div>
+  {%endblock right%}
+
+
+{% block content %}
+
+
+  <h1>Canal RSS </h1>
+  <h3 class = "indexlist">
+      &lt;?xml version="1.0" encoding="UTF-8" ?&gt;</br>
+      &lt;rss version="2.0"&gt;</br>
+      &lt;channel&gt;</br>
+      &lt;title&gt; RSS &lt;/title&gt;</br>
+      {% for comentario in comentarios %}
+      &lt;item&gt;</br>
+      &lt;title&gt;{{comentario.Hotel_id|striptags|safe}}&lt;/title&gt;</br>
+      &lt;comment&gt;{{comentario.body|striptags|safe}}&lt;/comment&gt;</br>
+      &lt;/item&gt;</br>
+      {% endfor %}
+      &lt;/channel&gt;</br>
+      &lt;/rss&gt;</br>
+    <a href="/"><h2><strong> Volver a la pagina principal </strong></h2></a>
+  </h3>
+</div>
+
+{% endblock content %}

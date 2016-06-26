@@ -1,6 +1,7 @@
 {% extends "index.html" %}
 {% block header %}
 <div id="header">
+  <h2>¡Alojamientos Madrid!</h2>
   {% if logged %}
   <li>Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a></li>
   {% else %}
@@ -12,8 +13,35 @@
 
 {% block content %}
 <div id="content">
-  <h1> Mis alojamientos favoritos </h1>
+  {% if titulo == "" %}
+  <h1 style="color: #FFFFFF;">Pagina de {{usuario}} </h1>
+      {% if logged and request.user.username == usuario %}
+      </br>
+      <form action="/cambiarTitulo" method="POST">{% csrf_token %}
+          <label for="titulo"><h3>Pon un nuevo nombre a tu pagina:</h3> </label>
+          <input type="text" name="titulo" value="" id="titulo" style = "width:400px; height:20px;">
+          <input type="submit" value="Cambiar"/>
+          </form>
+      </br>
+      {% endif %}
+    {% else %}
+      <h1 style="color: #FFFFFF;" font-size = "3em">{{titulo}}</h1>
+      {% if logged and request.user.username == usuario %}
+      </br>
+      <form action="/cambiarTitulo" method="POST">{% csrf_token %}
+          <label for="titulo"><h3>Pon un nuevo nombre a tu pagina: </h3></label>
+          <input type="text" name="titulo" value="" id="titulo" style = "width:400px; height:20px;">
+
+         <br><input type="submit" value="Cambiar">
+      </form>
+      </br>
+      {% endif %}
+    {% endif %}
+
+    <h3> Alojamientos favoritos de {{usuario}} : </h3>
+
     {% for hoteles in hoteles %}
+
       <div class="Mishoteles"</div>
           <item>
             <div class="hoteles">
@@ -21,11 +49,7 @@
               <a href="{{hoteles.Hotel.url_hotel}}"><h3>{{hoteles.Hotel.Nombre}}</h3></a>
               alojamiento favorito desde : {{hoteles.Date}}<br/>
 
-              <strong>Situado en: </strong>{{hoteles.Hotel.direccion}}<br/>
-
-            {% if empty%}
-            No tiene alojamientos en su lista de Favoritos.
-            {% endif %}
+              <strong>Situado en: </strong>{{hoteles.Hotel.direccion|striptags|safe}}<br/>
 
             <blockquote class="go">
               <a href="/alojamientos/{{hoteles.Hotel.id}}">Mas informacion</a>
@@ -34,7 +58,13 @@
         <hr class="separator">
         <a href="/">Volver a la pagina principal</a>
       </div>
+
     {% endfor %}
+
+
     </ul>
+    {%if logged%}
+    <a href="/xml"><h2>Canal XML</h2></a>
+    {%endif%}
 </div>
 {% endblock content %}

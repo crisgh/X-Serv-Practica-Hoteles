@@ -2,7 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=iso-8859-1" />
-<link rel="stylesheet"  href="estilo.css" type="text/css"/>
+<link rel="stylesheet"  href="estilofinal.css" type="text/css"/>
+<link rel="shortcut icon" href="/images/favicon.ico">
 <title> Hoteles </title>
 </head>
 
@@ -13,6 +14,7 @@
 <div id="container">
 
 <div id="header">
+
   {% block header %}{% endblock%}
 </div>
 
@@ -21,7 +23,10 @@
 <li id="active"><a href="/" id="current">inicio</a></li>
 <li><a href="/alojamientos">alojamientos</a></li>
 <li><a href="/about">about</a></li>
-<li><a href="/xml">xml</a></li>
+{%if logged%}
+<li><a href="/{{username}}">Mi pagina</a></li>
+{%endif%}
+
 </ul>
 </div>
 

@@ -1,23 +1,22 @@
 {% extends "index.html" %}
 {% block header %}
-<div id="header">
-  {% if logged %}
-  <li>Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a></li>
-  {% else %}
-  <li>Inicia sesión : <a href="http://127.0.0.1:8000/login">LOGIN</a></li>
-  {% endif %}
+  <div id="header">
+    <h2>¡Alojamientos Madrid!</h2>
 
-</div>
+    {% if logged %}
+    Hola {{ username }} <a href="http://127.0.0.1:8000/logout">LOGOUT</a>
+    {% else %}
+    Inicia sesión : <a href="http://127.0.0.1:8000/login">LOGIN</a>
+    {% endif %}
+  </div>
 {% endblock header%}
 
 {%block right%}
 <div id="right">
-
-  <h1>Listado de páginas de los usuarios</h1>
+  <h2> Paginas de usuarios: </h2>
   <p>
-    {% for user in users %}
-    <li>Página del usuario <a href="http://127.0.0.1:8000/{{user}}">{{user}}</a></li>
-    <br>
+    {% for user,titulo in users %}
+    <a href="http://127.0.0.1:8000/{{user}}">{{titulo|striptags|safe}}</a><br/>
     {% endfor %}
     <br><br>
   </p>
@@ -26,14 +25,13 @@
 
 {% block content %}
 <div id="content">
-  <h1> Hoteles con mas comentarios </h1>
+  <h1> Hoteles más comentados </h1>
   <ul class = "indexlist">
     {% for hoteles,url in hoteles %}
       <div class="10hoteles"</div>
-        <li>
           <item>
             <div class="hoteles">
-              <a href="{{hoteles.url}}"><h3>{{hoteles.Nombre}}</h3></a>
+              <a href="{{hoteles.url_hotel}}"><h2><strong>{{hoteles.Nombre}}</strong></h2></a>
               <strong>Situado en: </strong>{{hoteles.direccion}}<br/>
             </div>
             {% ifnotequal url "" %}
@@ -43,11 +41,15 @@
               <a href="/alojamientos/{{hoteles.id}}">Mas informacion</a>
             </blockquote>
           </item>
-        </li><hr class="separator">
+        <hr class="separator">
       </div>
       {% empty %}
         No hay hoteles con comentarios <br/>
     {% endfor %}
     </ul>
+
+    {% if logged %}
+    <h1><a href="/rss">Canal RSS</a></h1>
+    {%endif%}
 </div>
 {% endblock content %}
